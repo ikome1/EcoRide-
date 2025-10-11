@@ -1,0 +1,169 @@
+:root {
+  --vert-fonce: #2E7D32;
+  --vert: #66BB6A;
+  --vert-clair: #A5D6A7;
+  --fond: #F1F8E9;
+  --texte: #263238;
+  --blanc: #FFFFFF;
+}
+
+/* Réinitialisation simple */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: var(--fond);
+  color: var(--texte);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.navbar {
+  background-color: var(--blanc);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between; /* Place le logo à gauche et les liens à droite */
+  align-items: center; /* Aligne verticalement les éléments */
+  height: 70px;
+ }
+
+
+.logo {
+  display: flex;
+  align-items: center; /* Centre verticalement l'image */
+}
+
+.logo img {
+  height: 60px;
+  width: auto; /* Garde les proportions de l'image */
+}
+
+.nav-links {
+  display: flex; /* Aligne les liens horizontalement */
+  gap: 1.5rem; /* Ajoute un espacement entre les liens */
+}
+
+.nav-links li {
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--noir);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--vert-clair);
+}
+/* ---------- HEADER ---------- */
+header {
+  background-color: var(--vert-fonce);
+  color: var(--blanc);
+  padding: 1rem 2rem;
+  text-align: center;
+  height: 25rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+header p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+/* ---------- MAIN ---------- */
+main {
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Section Présentation */
+.presentation {
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+}
+
+.presentation h2 {
+  color: var(--vert-fonce);
+  margin-bottom: 1rem;
+}
+
+.presentation p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #4a5a4f;
+}
+
+.presentation img {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Section Recherche */
+.search h2 {
+  color: var(--vert-fonce);
+  margin-bottom: 1rem;
+}
+
+.search-bar {
+  margin-top: 1rem;
+  background: var(--blanc);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.search-bar input {
+  border: none;
+  padding: 1rem;
+  width: 250px;
+  outline: none;
+  font-size: 1rem;
+}
+
+.search-bar button {
+  background: var(--vert);
+  border: none;
+  color: var(--blanc);
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.search-bar button:hover {
+  background: var(--vert-fonce);
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+  background-color: var(--vert-fonce);
+  color: var(--blanc);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+footer a {
+  color: var(--vert-clair);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
