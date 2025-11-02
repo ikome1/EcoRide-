@@ -133,10 +133,10 @@ class APIClient {
 
         switch (this.currentUser.role) {
             case 'admin':
-                window.location.href = 'admin.html';
+                window.location.href = 'admin-dashboard.html';
                 break;
             case 'employee':
-                window.location.href = 'employee.html';
+                window.location.href = 'employee-dashboard.html';
                 break;
             case 'user':
             default:
