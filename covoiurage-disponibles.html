@@ -63,8 +63,72 @@
         </div>
     </main>
 
+    <!-- Modal de paiement -->
+    <div id="paymentModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">💳 Paiement</h3>
+                
+                <!-- Détails de la réservation -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Trajet:</span>
+                        <span class="font-semibold" id="paymentTripDetails"></span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Chauffeur:</span>
+                        <span class="font-semibold" id="paymentDriver"></span>
+                    </div>
+                    <div class="flex justify-between border-t pt-2">
+                        <span class="text-gray-900 font-bold">Total:</span>
+                        <span class="text-2xl font-bold text-green-600" id="paymentAmount"></span>
+                    </div>
+                </div>
+
+                <!-- Méthode de paiement -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Choisir votre méthode de paiement</label>
+                    
+                    <div class="space-y-2">
+                        <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="paymentMethod" value="card" class="h-4 w-4 text-green-600" checked>
+                            <span class="ml-3 text-gray-700">
+                                <span class="font-medium">💳 Carte bancaire</span>
+                                <p class="text-xs text-gray-500">Visa, Mastercard, etc.</p>
+                            </span>
+                        </label>
+                        
+                        <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="paymentMethod" value="paypal" class="h-4 w-4 text-green-600">
+                            <span class="ml-3 text-gray-700">
+                                <span class="font-medium">🅿️ PayPal</span>
+                                <p class="text-xs text-gray-500">Payer avec votre compte PayPal</p>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Message de simulation -->
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg mb-4 text-sm">
+                    ℹ️ <strong>Mode démo:</strong> Ceci est une simulation de paiement pour le projet scolaire. Aucun vrai paiement ne sera effectué.
+                </div>
+
+                <!-- Boutons -->
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="hidePaymentModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+                        Annuler
+                    </button>
+                    <button type="button" onclick="processPayment()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        Payer et réserver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/userManager.js"></script>
     <script src="js/tripManager.js"></script>
+    <script src="js/navbar.js"></script>
     <script>
         // Covoiturages de démonstration
         const availableTrips = [
@@ -229,6 +293,9 @@
             }
         }
 
+        // Variable globale pour stocker le voyage en cours de réservation
+        let currentBookingTrip = null;
+
         // Fonction pour réserver un covoiturage
         function bookTrip(tripId) {
             if (!userManager.isLoggedIn()) {
@@ -239,11 +306,72 @@
 
             const trip = availableTrips.find(t => t.id === tripId);
             if (trip && trip.availableSeats > 0) {
-                if (confirm(`Réserver une place pour ${trip.price}€ avec ${trip.driver} ?`)) {
-                    alert('Réservation effectuée avec succès ! Un email de confirmation vous sera envoyé.');
-                    // Ici, vous pouvez implémenter la logique de réservation
-                }
+                currentBookingTrip = trip;
+                showPaymentModal();
             }
+        }
+
+        // Fonction pour afficher le modal de paiement
+        function showPaymentModal() {
+            if (!currentBookingTrip) return;
+
+            document.getElementById('paymentTripDetails').textContent = 
+                `${currentBookingTrip.departure} → ${currentBookingTrip.destination}`;
+            document.getElementById('paymentDriver').textContent = currentBookingTrip.driver;
+            document.getElementById('paymentAmount').textContent = `${currentBookingTrip.price}€`;
+
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        // Fonction pour cacher le modal de paiement
+        function hidePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            currentBookingTrip = null;
+        }
+
+        // Fonction pour traiter le paiement
+        function processPayment() {
+            if (!currentBookingTrip) return;
+
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            
+            // Simuler le processus de paiement
+            setTimeout(() => {
+                // Créer la réservation dans le système
+                const user = userManager.getCurrentUser();
+                const reservation = {
+                    id: Date.now(),
+                    tripId: currentBookingTrip.id,
+                    userId: user.id,
+                    driver: currentBookingTrip.driver,
+                    departure: currentBookingTrip.departure,
+                    destination: currentBookingTrip.destination,
+                    date: currentBookingTrip.date,
+                    price: currentBookingTrip.price,
+                    paymentMethod: paymentMethod,
+                    status: 'confirmed',
+                    createdAt: new Date().toISOString()
+                };
+
+                // Sauvegarder la réservation
+                saveReservation(reservation);
+
+                // Cacher le modal
+                hidePaymentModal();
+
+                // Afficher le message de succès
+                alert(`✅ Réservation confirmée !\n\nTrajet: ${currentBookingTrip.departure} → ${currentBookingTrip.destination}\nChauffeur: ${currentBookingTrip.driver}\nPrix: ${currentBookingTrip.price}€\n\nMerci pour votre confiance !`);
+
+                // Rediriger vers le dashboard
+                window.location.href = 'dashboard.html';
+            }, 500);
+        }
+
+        // Fonction pour sauvegarder une réservation
+        function saveReservation(reservation) {
+            let reservations = JSON.parse(localStorage.getItem('ecoride_reservations') || '[]');
+            reservations.push(reservation);
+            localStorage.setItem('ecoride_reservations', JSON.stringify(reservations));
         }
 
         // Gestion des filtres
@@ -282,6 +410,9 @@
         // Exporter les fonctions
         window.contactDriver = contactDriver;
         window.bookTrip = bookTrip;
+        window.showPaymentModal = showPaymentModal;
+        window.hidePaymentModal = hidePaymentModal;
+        window.processPayment = processPayment;
     </script>
 </body>
 </html>

@@ -108,11 +108,15 @@ function loadTrips(user) {
     const passengerTrips = document.getElementById('passengerTrips');
     const driverTrips = document.getElementById('driverTrips');
     
+    // Charger les réservations depuis le localStorage
+    const reservations = JSON.parse(localStorage.getItem('ecoride_reservations') || '[]');
+    const userReservations = reservations.filter(res => res.userId === user.id);
+    
     // Voyages en tant que passager
     const passengerTripsList = user.trips?.filter(trip => trip.type === 'passager') || [];
     passengerTrips.innerHTML = '';
     
-    if (passengerTripsList.length === 0) {
+    if (passengerTripsList.length === 0 && userReservations.length === 0) {
         passengerTrips.innerHTML = `
             <div class="text-center py-8 text-gray-500">
                 <div class="text-4xl mb-3">👤</div>
@@ -121,6 +125,7 @@ function loadTrips(user) {
             </div>
         `;
     } else {
+        // Afficher d'abord les voyages depuis user.trips
         passengerTripsList.forEach(trip => {
             const tripCard = document.createElement('div');
             tripCard.className = 'bg-blue-50 border border-blue-200 rounded-lg p-3';
@@ -135,6 +140,28 @@ function loadTrips(user) {
                         <p class="font-semibold text-blue-900">${trip.prix} crédits</p>
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             ${trip.statut}
+                        </span>
+                    </div>
+                </div>
+            `;
+            passengerTrips.appendChild(tripCard);
+        });
+        
+        // Afficher ensuite les réservations depuis le localStorage
+        userReservations.forEach(reservation => {
+            const tripCard = document.createElement('div');
+            tripCard.className = 'bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2';
+            tripCard.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h5 class="font-semibold text-blue-900">${reservation.departure} → ${reservation.destination}</h5>
+                        <p class="text-sm text-blue-700">${formaterDate(reservation.date)}</p>
+                        <p class="text-sm text-blue-600">Chauffeur: ${reservation.driver}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-blue-900">${reservation.price}€</p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${reservation.status === 'confirmed' ? 'Confirmé' : reservation.status}
                         </span>
                     </div>
                 </div>
