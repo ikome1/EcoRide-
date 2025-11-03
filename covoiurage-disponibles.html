@@ -131,7 +131,7 @@
     <script src="js/navbar.js"></script>
     <script>
         // Covoiturages de démonstration
-        const availableTrips = [
+        const demoTrips = [
             {
                 id: 1,
                 driver: 'Jean Dupont',
@@ -201,6 +201,39 @@
                 description: 'Véhicule électrique, départ confortable de l\'après-midi.'
             }
         ];
+
+        // Fonction pour convertir un covoiturage du format tripManager au format de cette page
+        function convertTripFormat(trip) {
+            return {
+                id: trip.id,
+                driver: trip.conducteur?.nom || 'Conducteur inconnu',
+                driverPhoto: trip.conducteur?.photo || 'images/dupont.jpeg',
+                departure: trip.trajet?.depart || '',
+                destination: trip.trajet?.destination || '',
+                date: trip.details?.date || '',
+                time: trip.details?.heureDepart || '',
+                duration: trip.trajet?.duree || '',
+                price: trip.details?.prix || 0,
+                availableSeats: trip.details?.placesDisponibles || 0,
+                totalSeats: trip.details?.vehicule?.places || 0,
+                vehicle: `${trip.details?.vehicule?.marque || ''} ${trip.details?.vehicule?.modele || ''}`.trim(),
+                vehicleType: trip.details?.vehicule?.type || 'Inconnu',
+                rating: trip.conducteur?.note || 5.0,
+                description: trip.description || `Trajet de ${trip.trajet?.depart} vers ${trip.trajet?.destination}`
+            };
+        }
+
+        // Charger tous les covoiturages (démo + utilisateurs)
+        let availableTrips = [...demoTrips];
+        
+        // Charger les covoiturages créés par les utilisateurs
+        if (typeof tripManager !== 'undefined') {
+            tripManager.syncUserTrips();
+            const userTrips = tripManager.getAllTrips();
+            const convertedUserTrips = userTrips.map(trip => convertTripFormat(trip));
+            availableTrips = [...demoTrips, ...convertedUserTrips];
+            console.log('Total covoiturages chargés:', availableTrips.length, '(démo:', demoTrips.length, ', utilisateurs:', convertedUserTrips.length, ')');
+        }
 
         // Fonction pour afficher les covoiturages
         function displayTrips(trips) {
