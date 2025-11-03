@@ -235,6 +235,18 @@
             console.log('Total covoiturages chargés:', availableTrips.length, '(démo:', demoTrips.length, ', utilisateurs:', convertedUserTrips.length, ')');
         }
 
+        // Fonction pour trier les covoiturages par date (du plus récent au plus ancien)
+        function sortTripsByDate(trips) {
+            return trips.sort((a, b) => {
+                const dateA = new Date(a.date + 'T' + (a.time || '00:00')).getTime();
+                const dateB = new Date(b.date + 'T' + (b.time || '00:00')).getTime();
+                return dateB - dateA; // Plus récent en premier
+            });
+        }
+
+        // Trier les covoiturages par date au chargement
+        availableTrips = sortTripsByDate(availableTrips);
+
         // Fonction pour afficher les covoiturages
         function displayTrips(trips) {
             const tripsList = document.getElementById('tripsList');
@@ -428,6 +440,8 @@
                 filteredTrips = filteredTrips.filter(t => t.date === date);
             }
 
+            // Trier les résultats filtrés par date (du plus récent au plus ancien)
+            filteredTrips = sortTripsByDate(filteredTrips);
             displayTrips(filteredTrips);
         });
 
