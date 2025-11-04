@@ -1,0 +1,45 @@
+[33mcommit b8ef36f2787bef53ffb8ae6372f882e34020d85d[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: idrissa kome <idrisktify@localhost.localdomain>
+Date:   Mon Nov 3 01:59:01 2025 +0100
+
+    Ajout du tri des covoiturages par date (du plus récent au plus ancien)
+
+[33mcommit 1668ccd20f4eeb1f5971474576e114a438e97269[m
+Author: idrissa kome <idrisktify@localhost.localdomain>
+Date:   Mon Nov 3 01:40:58 2025 +0100
+
+    Affichage des covoiturages créés par les utilisateurs dans Accès aux covoiturages
+    
+    - Ajout de la fonction convertTripFormat pour convertir le format des covoiturages
+    - Chargement des covoiturages utilisateurs depuis tripManager
+    - Fusion des covoiturages démo et utilisateurs pour l'affichage
+
+[33mcommit 9037c79c6153b53b015867547ab1c47602f12490[m
+Author: idrissa kome <idrisktify@localhost.localdomain>
+Date:   Mon Nov 3 01:37:15 2025 +0100
+
+    Ajout du système de paiement et affichage des réservations
+    
+    - Ajout de navbar.js dans covoiurage-disponibles.html pour afficher correctement la navbar
+    - Création d'un modal de paiement avec choix Carte/PayPal
+    - Mise à jour de la fonction bookTrip pour ouvrir le modal de paiement
+    - Affichage des réservations dans le dashboard utilisateur
+    - Système de simulation de paiement pour projet scolaire
+
+[33mcommit 97ae39a29998884cedc1b07699588bd030887eee[m
+Author: idrissa kome <idrisktify@localhost.localdomain>
+Date:   Mon Nov 3 00:59:32 2025 +0100
+
+    Description des changements récents
+
+[33mcommit 6a6f97ba1ea954bd37fd6b9f3051c011cabf71bf[m
+Author: idrissa kome <idrissakome9802@gmail.com>
+Date:   Wed Oct 29 08:21:04 2025 +0100
+
+    premier commit
+
+[33mcommit 124cb5d89f50d4e4954371bc7da3ffc391e75113[m
+Author: idrissa kome <idrissakome9802@gmail.com>
+Date:   Sat Oct 11 02:48:36 2025 +0200
+
+    premier commit
