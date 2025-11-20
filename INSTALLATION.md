@@ -1,6 +1,6 @@
 # Guide d'installation EcoRide
 
-## 👨‍🏫 Pour le professeur / Correcteur ou n'import qui
+## 👨‍🏫 Pour le professeur / Correcteur ou par n'import qui
 
 Salut ! 👋 c'est un guide complet que j'ai crée pour vous faciliter la tache mais pour les gens qui voudront du projet debutant ou expert
 
