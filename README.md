@@ -163,11 +163,8 @@ EcoRide--main/
 
 ## 📚 Documentation
 
-- **[INSTALLATION.md](INSTALLATION.md)** - Guide d'installation détaillé
-- **[DEPLOIEMENT.md](DEPLOIEMENT.md)** - Guide de déploiement production
-- **[MAQUETTES.md](MAQUETTES.md)** - Documentation des maquettes
+- **[INSTALLATION.md](INSTALLATION.md)** - Guide d'installation
 - **[COMPTES_TEST.md](COMPTES_TEST.md)** - Comptes de test
-- **[VERIFICATION_COMPETENCES.md](VERIFICATION_COMPETENCES.md)** - Vérification des compétences
 
 ---
 
