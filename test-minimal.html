@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Minimal</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test Minimal</h1>
+    
+    <div id="status">Chargement...</div>
+    
+    <div class="test">
+        <button onclick="test1()">Test 1: Vérifier userManager</button>
+        <button onclick="test2()">Test 2: Créer utilisateur simple</button>
+        <button onclick="test3()">Test 3: Vérifier localStorage</button>
+        <button onclick="clearAll()">Vider tout</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        function test1() {
+            log('=== TEST 1: Vérifier userManager ===');
+            
+            try {
+                if (typeof userManager === 'undefined') {
+                    log('❌ userManager n\'existe pas', 'error');
+                    return;
+                }
+                log('✅ userManager existe', 'success');
+                
+                if (!userManager.users) {
+                    log('❌ userManager.users n\'existe pas', 'error');
+                    return;
+                }
+                log('✅ userManager.users existe', 'success');
+                
+                log(`Nombre d'utilisateurs: ${userManager.users.length}`, 'info');
+                
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        function test2() {
+            log('=== TEST 2: Créer utilisateur simple ===');
+            
+            try {
+                // Créer un utilisateur directement sans validation
+                const simpleUser = {
+                    id: Date.now(),
+                    pseudo: 'test' + Date.now(),
+                    email: 'test' + Date.now() + '@test.com',
+                    password: 'Test123',
+                    credits: 20,
+                    role: 'user',
+                    type: 'passager',
+                    vehicles: [],
+                    preferences: { fumeur: false, animaux: false, autres: [] },
+                    trips: [],
+                    createdAt: new Date().toISOString()
+                };
+                
+                log(`Utilisateur créé: ${simpleUser.pseudo}`, 'success');
+                
+                // Ajouter à la liste
+                userManager.users.push(simpleUser);
+                log(`Ajouté à la liste. Total: ${userManager.users.length}`, 'success');
+                
+                // Sauvegarder
+                const saved = userManager.saveUsers();
+                log(`Sauvegarde: ${saved ? 'OK' : 'ÉCHEC'}`, saved ? 'success' : 'error');
+                
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+                log(`Stack: ${error.stack}`, 'error');
+            }
+        }
+        
+        function test3() {
+            log('=== TEST 3: Vérifier localStorage ===');
+            
+            try {
+                const stored = localStorage.getItem('ecoride_users');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    log(`localStorage contient ${parsed.length} utilisateurs`, 'success');
+                    parsed.forEach((user, i) => {
+                        log(`  ${i+1}. ${user.pseudo} (${user.email})`, 'info');
+                    });
+                } else {
+                    log('localStorage vide', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur localStorage: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearAll() {
+            try {
+                localStorage.clear();
+                if (typeof userManager !== 'undefined') {
+                    userManager.users = [];
+                }
+                log('✅ Tout vidé', 'success');
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const status = document.getElementById('status');
+            
+            // Attendre un peu que le script se charge
+            setTimeout(() => {
+                if (typeof userManager !== 'undefined') {
+                    status.innerHTML = '✅ userManager chargé';
+                    log('userManager chargé avec succès', 'success');
+                } else {
+                    status.innerHTML = '❌ userManager non chargé';
+                    log('userManager non chargé', 'error');
+                }
+            }, 100);
+        });
+    </script>
+    
+    <!-- Charger userManager -->
+    <script src="js/userManager.js"></script>
+</body>
+</html>

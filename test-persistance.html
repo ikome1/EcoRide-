@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Persistance Connexion</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>Test de Persistance de Connexion</h1>
+    
+    <div id="status">Chargement...</div>
+    
+    <div class="test">
+        <h3>Actions de test</h3>
+        <button onclick="testLogin()">Se connecter</button>
+        <button onclick="testLogout()">Se déconnecter</button>
+        <button onclick="checkStatus()">Vérifier le statut</button>
+        <button onclick="reloadPage()">Recharger la page</button>
+        <button onclick="clearStorage()">Vider le localStorage</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script src="js/userManager.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        function testLogin() {
+            try {
+                log('Tentative de connexion avec user/user123');
+                const result = userManager.login('user', 'user123');
+                
+                if (result.success) {
+                    log('✅ Connexion réussie!', 'success');
+                    log(`Utilisateur: ${result.user.pseudo}, Crédits: ${result.user.credits}`, 'info');
+                    log(`ID utilisateur: ${result.user.id}`, 'info');
+                    checkStatus();
+                } else {
+                    log(`❌ Échec de connexion: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        function testLogout() {
+            try {
+                userManager.logout();
+                log('✅ Déconnexion réussie!', 'success');
+                checkStatus();
+            } catch (error) {
+                log(`❌ Erreur lors de la déconnexion: ${error.message}`, 'error');
+            }
+        }
+        
+        function checkStatus() {
+            const isLoggedIn = userManager.isLoggedIn();
+            const user = userManager.getCurrentUser();
+            const stored = localStorage.getItem('ecoride_current_user');
+            
+            log(`Statut de connexion: ${isLoggedIn ? '✅ Connecté' : '❌ Non connecté'}`);
+            
+            if (user) {
+                log(`Utilisateur actuel: ${user.pseudo} (ID: ${user.id})`, 'info');
+                log(`Crédits: ${user.credits}`, 'info');
+            } else {
+                log('Utilisateur actuel: Aucun', 'error');
+            }
+            
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    log(`localStorage: ${parsed.pseudo} (${parsed.credits} crédits)`, 'info');
+                } catch (e) {
+                    log(`❌ Erreur de parsing localStorage: ${e.message}`, 'error');
+                }
+            } else {
+                log('localStorage: Vide', 'error');
+            }
+            
+            // Test de synchronisation
+            if (isLoggedIn && user) {
+                const syncResult = userManager.syncCurrentUser();
+                log(`Synchronisation: ${syncResult ? '✅ OK' : '❌ Échec'}`, syncResult ? 'success' : 'error');
+            }
+        }
+        
+        function reloadPage() {
+            log('Rechargement de la page...', 'info');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            log('✅ localStorage vidé!', 'success');
+            checkStatus();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const status = document.getElementById('status');
+            
+            if (typeof userManager !== 'undefined') {
+                status.innerHTML = '✅ userManager chargé';
+                log('userManager chargé avec succès', 'success');
+                
+                // Vérifier automatiquement le statut au chargement
+                setTimeout(() => {
+                    checkStatus();
+                }, 100);
+            } else {
+                status.innerHTML = '❌ userManager non chargé';
+                log('userManager non chargé', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion EcoRide</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test de Connexion EcoRide</h1>
+    
+    <div id="status">Chargement...</div>
+    
+    <div class="test">
+        <h3>Test de connexion</h3>
+        <button onclick="testLogin()">Tester la connexion</button>
+        <button onclick="testLogout()">Tester la déconnexion</button>
+        <button onclick="checkStatus()">Vérifier le statut</button>
+        <button onclick="clearStorage()">Vider le localStorage</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script src="js/userManager.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        function testLogin() {
+            try {
+                log('Test de connexion avec user/user123');
+                const result = userManager.login('user', 'user123');
+                
+                if (result.success) {
+                    log('✅ Connexion réussie!', 'success');
+                    log(`Utilisateur: ${result.user.pseudo}, Crédits: ${result.user.credits}`);
+                    checkStatus();
+                } else {
+                    log(`❌ Échec de connexion: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        function testLogout() {
+            try {
+                userManager.logout();
+                log('✅ Déconnexion réussie!', 'success');
+                checkStatus();
+            } catch (error) {
+                log(`❌ Erreur lors de la déconnexion: ${error.message}`, 'error');
+            }
+        }
+        
+        function checkStatus() {
+            const isLoggedIn = userManager.isLoggedIn();
+            const user = userManager.getCurrentUser();
+            const stored = localStorage.getItem('ecoride_current_user');
+            
+            log(`Statut de connexion: ${isLoggedIn ? 'Connecté' : 'Non connecté'}`);
+            log(`Utilisateur actuel: ${user ? user.pseudo : 'Aucun'}`);
+            log(`Données localStorage: ${stored ? 'Présentes' : 'Absentes'}`);
+            
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    log(`Données parsées: ${parsed.pseudo} (${parsed.credits} crédits)`);
+                } catch (e) {
+                    log(`❌ Erreur de parsing localStorage: ${e.message}`, 'error');
+                }
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            log('✅ localStorage vidé!', 'success');
+            checkStatus();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const status = document.getElementById('status');
+            
+            if (typeof userManager !== 'undefined') {
+                status.innerHTML = '✅ userManager chargé';
+                log('userManager chargé avec succès', 'success');
+                checkStatus();
+            } else {
+                status.innerHTML = '❌ userManager non chargé';
+                log('userManager non chargé', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple Création Compte</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; }
+        input { padding: 5px; margin: 5px; width: 200px; display: block; }
+    </style>
+</head>
+<body>
+    <h1>Test Simple Création Compte</h1>
+    
+    <div id="status">Chargement...</div>
+    
+    <div class="test">
+        <h3>Formulaire de test</h3>
+        <input type="text" id="pseudo" placeholder="Pseudo" value="testuser">
+        <input type="email" id="email" placeholder="Email" value="test@test.com">
+        <input type="password" id="password" placeholder="Mot de passe" value="Test123">
+        <button onclick="testCreate()">Créer le compte</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script src="js/userManager.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        function testCreate() {
+            const pseudo = document.getElementById('pseudo').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log(`=== DÉBUT DU TEST ===`);
+            log(`Pseudo: "${pseudo}"`);
+            log(`Email: "${email}"`);
+            log(`Mot de passe: "${password}"`);
+            
+            // Test 1: Vérifier que userManager existe
+            if (typeof userManager === 'undefined') {
+                log('❌ userManager n\'existe pas!', 'error');
+                return;
+            }
+            log('✅ userManager existe', 'success');
+            
+            // Test 2: Vérifier la méthode createAccount
+            if (typeof userManager.createAccount !== 'function') {
+                log('❌ createAccount n\'est pas une fonction!', 'error');
+                return;
+            }
+            log('✅ createAccount est une fonction', 'success');
+            
+            // Test 3: Vérifier la méthode isPasswordSecure
+            if (typeof userManager.isPasswordSecure !== 'function') {
+                log('❌ isPasswordSecure n\'est pas une fonction!', 'error');
+                return;
+            }
+            log('✅ isPasswordSecure est une fonction', 'success');
+            
+            // Test 4: Tester la validation du mot de passe
+            try {
+                const isSecure = userManager.isPasswordSecure(password);
+                log(`Validation mot de passe: ${isSecure ? '✅ Valide' : '❌ Invalide'}`, isSecure ? 'success' : 'error');
+                
+                if (!isSecure) {
+                    log('Le mot de passe ne respecte pas les critères de sécurité', 'error');
+                    return;
+                }
+            } catch (error) {
+                log(`❌ Erreur lors de la validation: ${error.message}`, 'error');
+                return;
+            }
+            
+            // Test 5: Vérifier les utilisateurs existants
+            try {
+                log(`Utilisateurs existants: ${userManager.users.length}`, 'info');
+                const existingUser = userManager.users.find(u => u.pseudo === pseudo || u.email === email);
+                if (existingUser) {
+                    log(`❌ Utilisateur existant trouvé: ${existingUser.pseudo}`, 'error');
+                    return;
+                }
+                log('✅ Aucun utilisateur existant avec ces identifiants', 'success');
+            } catch (error) {
+                log(`❌ Erreur lors de la vérification: ${error.message}`, 'error');
+                return;
+            }
+            
+            // Test 6: Créer le compte
+            try {
+                log('Tentative de création du compte...', 'info');
+                const user = userManager.createAccount(pseudo, email, password);
+                log(`✅ Compte créé avec succès!`, 'success');
+                log(`ID: ${user.id}`, 'info');
+                log(`Pseudo: ${user.pseudo}`, 'info');
+                log(`Email: ${user.email}`, 'info');
+                log(`Crédits: ${user.credits}`, 'info');
+                log(`Type: ${user.type}`, 'info');
+                
+                // Test 7: Vérifier que l'utilisateur a été ajouté
+                log(`Utilisateurs après création: ${userManager.users.length}`, 'info');
+                
+                // Test 8: Vérifier le localStorage
+                const stored = localStorage.getItem('ecoride_users');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        log(`localStorage: ${parsed.length} utilisateurs sauvegardés`, 'info');
+                    } catch (e) {
+                        log(`❌ Erreur parsing localStorage: ${e.message}`, 'error');
+                    }
+                } else {
+                    log('❌ Aucune donnée dans localStorage', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur lors de la création: ${error.message}`, 'error');
+                log(`Stack trace: ${error.stack}`, 'error');
+            }
+            
+            log(`=== FIN DU TEST ===`);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const status = document.getElementById('status');
+            
+            if (typeof userManager !== 'undefined') {
+                status.innerHTML = '✅ userManager chargé';
+                log('userManager chargé avec succès', 'success');
+                log(`Utilisateurs initiaux: ${userManager.users.length}`, 'info');
+            } else {
+                status.innerHTML = '❌ userManager non chargé';
+                log('userManager non chargé', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+
+

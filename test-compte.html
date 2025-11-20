@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Création Compte</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; }
+        input { padding: 5px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Test de Création de Compte</h1>
+    
+    <div id="status">Chargement...</div>
+    
+    <div class="test">
+        <h3>Test rapide</h3>
+        <input type="text" id="testPseudo" placeholder="Pseudo" value="testuser">
+        <input type="email" id="testEmail" placeholder="Email" value="test@test.com">
+        <input type="password" id="testPassword" placeholder="Mot de passe" value="Test123">
+        <br>
+        <button onclick="testCreateAccount()">Tester la création</button>
+        <button onclick="testPasswordValidation()">Tester validation mot de passe</button>
+        <button onclick="listUsers()">Lister les utilisateurs</button>
+        <button onclick="clearUsers()">Vider les utilisateurs</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script src="js/userManager.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        function testCreateAccount() {
+            const pseudo = document.getElementById('testPseudo').value;
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            log(`Tentative de création: ${pseudo} / ${email}`);
+            
+            try {
+                const user = userManager.createAccount(pseudo, email, password);
+                log(`✅ Compte créé avec succès!`, 'success');
+                log(`ID: ${user.id}, Pseudo: ${user.pseudo}, Email: ${user.email}`, 'info');
+                log(`Crédits: ${user.credits}, Type: ${user.type}`, 'info');
+                listUsers();
+            } catch (error) {
+                log(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        function testPasswordValidation() {
+            const passwords = [
+                'test',           // Trop court
+                'test123',        // Pas de majuscule
+                'TEST123',        // Pas de minuscule
+                'Test',           // Pas de chiffre
+                'Test123',        // Valide
+                'MyPassword123',  // Valide
+                '12345678'        // Pas de lettre
+            ];
+            
+            passwords.forEach(pwd => {
+                const isValid = userManager.isPasswordSecure(pwd);
+                log(`Mot de passe "${pwd}": ${isValid ? '✅ Valide' : '❌ Invalide'}`, isValid ? 'success' : 'error');
+            });
+        }
+        
+        function listUsers() {
+            const users = userManager.users;
+            log(`Nombre d'utilisateurs: ${users.length}`, 'info');
+            
+            users.forEach((user, index) => {
+                log(`Utilisateur ${index + 1}: ${user.pseudo} (${user.email}) - ${user.credits} crédits`, 'info');
+            });
+            
+            // Vérifier le localStorage
+            const stored = localStorage.getItem('ecoride_users');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    log(`localStorage: ${parsed.length} utilisateurs sauvegardés`, 'info');
+                } catch (e) {
+                    log(`❌ Erreur parsing localStorage: ${e.message}`, 'error');
+                }
+            } else {
+                log('localStorage: Aucune donnée utilisateur', 'error');
+            }
+        }
+        
+        function clearUsers() {
+            userManager.users = [];
+            userManager.saveUsers();
+            log('✅ Utilisateurs supprimés!', 'success');
+            listUsers();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const status = document.getElementById('status');
+            
+            if (typeof userManager !== 'undefined') {
+                status.innerHTML = '✅ userManager chargé';
+                log('userManager chargé avec succès', 'success');
+                listUsers();
+            } else {
+                status.innerHTML = '❌ userManager non chargé';
+                log('userManager non chargé', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
